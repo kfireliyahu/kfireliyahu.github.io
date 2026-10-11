@@ -1,0 +1,34 @@
+---
+/**
+ * One chapter: a rule that draws in, the title row, an optional deck line under
+ * it, then whatever goes inside. Reveals on scroll.
+ *
+ * The title row is the chapter's rail link set large: the number in its own
+ * column, then the heading.
+ */
+import Text from './Text.astro';
+
+interface Props {
+  id: string;
+  number: number;
+  heading: string;
+  deck?: string | null;
+  /** The lead chapter opens taller, with a larger deck. One per page. */
+  lead?: boolean;
+}
+const { id, number, heading, deck = null, lead = false } = Astro.props;
+const num = String(number).padStart(2, '0');
+---
+<section id={id} class:list={['chapter', { 'chapter--lead': lead }]} aria-labelledby={`${id}-heading`}>
+  <header class="chapter__head" data-reveal>
+    <div class="rule"></div>
+    <div class="chapter__title">
+      <span class="chapter__num" aria-hidden="true">{num}</span>
+      <h2 id={`${id}-heading`}><Text text={heading} /></h2>
+    </div>
+    {deck && <p class="chapter__deck"><Text text={deck} /></p>}
+  </header>
+  <div class="chapter__body" data-reveal data-reveal-delay="1">
+    <slot />
+  </div>
+</section>

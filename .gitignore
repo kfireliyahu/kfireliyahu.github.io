@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.env
+.env.*
+
+# Emerald development document for this site. Private, never committed.
+site.emd
+*.emd
+*.emd.*.bak
+
+# Claude Code session files (preview config). Local only.
+.claude/

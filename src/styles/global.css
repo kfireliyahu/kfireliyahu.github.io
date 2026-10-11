@@ -1,0 +1,2155 @@
+/* Fonts, self-hosted from node_modules. The browser fetches only the unicode ranges a page uses. */
+@import '@fontsource-variable/rubik';
+@import '@fontsource-variable/assistant';
+
+:root {
+  color-scheme: light dark;
+
+  /* Main colour: slate blue. One accent, used only where a link is hovered or focused. */
+  --slate: #344963;
+  --bg: #fbfaf7;
+  --bg-elevated: #f2f0ea;
+  --fg: #1b2430;
+  --fg-muted: #66717f;
+  --heading: var(--slate);
+  --link: var(--slate);
+  --accent: #b7772f;
+  /* The accent as text: --accent itself is 3.5:1 on --bg, enough for outlines but not for words. */
+  --accent-ink: #9a5f1e;
+  --rule: #dcd8cf;
+  --rule-strong: var(--slate);
+  --placeholder-bg: #fff3d6;
+  --placeholder-fg: #7a4e00;
+  --shadow: 0 40px 80px -40px rgba(27, 36, 48, 0.35);
+  /* A claim that holds or fails (the claim check). Used nowhere else. */
+  --good: #1f7a5c;
+  --bad: #b3372a;
+
+  --font-heading: 'Rubik Variable', 'Rubik', system-ui, sans-serif;
+  --font-body: 'Assistant Variable', 'Assistant', system-ui, sans-serif;
+
+  /* Type ladder. Every size on the page is one of these. */
+  --step--1: 0.9375rem;
+  --step-0: 1.1875rem;
+  --step-1: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  --step-2: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  --step-3: clamp(2.25rem, 1.7rem + 2.4vw, 3.75rem);
+  --step-4: clamp(3rem, 1.6rem + 6vw, 6.75rem);
+  --label: 0.8125rem;
+
+  /* Space scale. Every gap on the page is one of these. */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: clamp(3rem, 6vw, 4.5rem);
+  --space-6: clamp(5rem, 12vw, 10rem);
+
+  /* Page grid: a narrow rail for the index, then the text column. */
+  --page-max: 84rem;
+  --rail: 13rem;
+  --gutter: 1.25rem;
+  --measure: 36rem;
+  --label-col: 11rem;
+  --column-gap: clamp(2rem, 5vw, 5rem);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration: 700ms;
+}
+
+/* Dark: follows the system unless the toggle has set data-theme on <html>. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0e1319;
+    --bg-elevated: #151c25;
+    --fg: #e0e5eb;
+    --fg-muted: #8e9aab;
+    --heading: #cdd9e8;
+    --link: #b9c9de;
+    --accent: #d9a05a;
+    --accent-ink: #d9a05a;
+    --rule: #242d38;
+    --rule-strong: #9fb3cc;
+    --placeholder-bg: #3a2c0c;
+    --placeholder-fg: #f3d49a;
+    --shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.8);
+    --good: #5cc39a;
+    --bad: #ec7f72;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #0e1319;
+  --bg-elevated: #151c25;
+  --fg: #e0e5eb;
+  --fg-muted: #8e9aab;
+  --heading: #cdd9e8;
+  --link: #b9c9de;
+  --accent: #d9a05a;
+  --accent-ink: #d9a05a;
+  --rule: #242d38;
+  --rule-strong: #9fb3cc;
+  --placeholder-bg: #3a2c0c;
+  --placeholder-fg: #f3d49a;
+  --shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.8);
+  --good: #5cc39a;
+  --bad: #ec7f72;
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --gutter: 2.5rem;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 100%;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-size: var(--step-0);
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  color: var(--heading);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: var(--step-3);
+}
+
+h3 {
+  font-size: var(--step-0);
+  letter-spacing: 0;
+  line-height: 1.4;
+  color: var(--heading);
+}
+
+p {
+  margin: 0;
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+p + p {
+  margin-top: 1em;
+}
+
+a {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, var(--link) 35%, transparent);
+  transition: text-decoration-color 150ms ease, color 150ms ease;
+}
+
+a:hover {
+  text-decoration-color: var(--accent);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--slate) 22%, transparent);
+}
+
+/* Small running labels: chapter numbers, margin notes, meta. */
+.label {
+  font-family: var(--font-heading);
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A quiet underline that draws in from the left on hover. For names and index links. */
+.draw {
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  transition: background-size 350ms var(--ease-out);
+}
+
+.draw:hover,
+.draw:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* Page grid */
+.page {
+  width: min(100% - 2 * var(--gutter), var(--page-max));
+  margin-inline: auto;
+  flex: 1;
+}
+
+@media (min-width: 64rem) {
+  .page {
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    column-gap: var(--column-gap);
+    align-items: start;
+  }
+}
+
+/* The index: name on top, chapters below, the theme toggle last.
+   Sticky on desktop; a thin row with the name and the toggle on small screens. */
+.rail {
+  padding-block: var(--space-3);
+  font-family: var(--font-heading);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.rail__home {
+  text-decoration: none;
+  color: var(--heading);
+  font-weight: 500;
+  font-size: var(--step--1);
+  letter-spacing: 0.01em;
+}
+
+.rail__list {
+  display: none;
+}
+
+/* The theme toggle: a small text control that names what it switches to. */
+.theme {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0.25rem 0;
+  margin-left: auto;
+  font: inherit;
+  font-family: var(--font-heading);
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  transition: color 200ms ease;
+}
+
+.theme:hover {
+  color: var(--heading);
+}
+
+.theme:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* A small disc, half filled: the one glyph that reads as "scheme" without an icon set. */
+.theme::before {
+  content: '';
+  width: 0.8em;
+  height: 0.8em;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+}
+
+/* The two labels: only the one for the scheme we would switch to is shown. */
+.theme__to-dark,
+.theme__to-light {
+  display: none;
+}
+
+.theme[data-current='light'] .theme__to-dark,
+.theme[data-current='dark'] .theme__to-light {
+  display: inline;
+}
+
+/* On small screens the home page already opens with the name, so the rail shows only the toggle. */
+@media (max-width: 63.98rem) {
+  .page--home .rail__home {
+    display: none;
+  }
+}
+
+@media (min-width: 64rem) {
+  .rail {
+    position: sticky;
+    top: 0;
+    display: grid;
+    align-content: start;
+    gap: 0;
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-4);
+    max-height: 100dvh;
+  }
+
+  .rail__list {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-5);
+  }
+
+  .theme {
+    margin-left: 0;
+    margin-top: var(--space-5);
+    justify-self: start;
+  }
+
+  .rail__item a {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    align-items: baseline;
+    text-decoration: none;
+    color: var(--fg-muted);
+    font-size: var(--step--1);
+    transition: color 200ms ease, transform 300ms var(--ease-out);
+  }
+
+  .rail__item a:hover,
+  .rail__item a[aria-current='true'] {
+    color: var(--heading);
+  }
+
+  .rail__item a[aria-current='true'] {
+    transform: translateX(4px);
+  }
+
+  .rail__item a > span:last-child {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    transition: background-size 350ms var(--ease-out);
+  }
+
+  .rail__item a:hover > span:last-child {
+    background-size: 100% 1px;
+  }
+
+  .rail__num {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Sub-chapters, their own rows in the one list, indented under their chapter. */
+  .rail__item--sub a {
+    grid-template-columns: 2.75rem 1fr;
+    padding-left: 2.25rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* The text column */
+.main {
+  min-width: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The skip link: out of sight until a keyboard reaches it, then on top of everything. */
+.skip {
+  position: fixed;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  padding: 0.5rem 0.9rem;
+  font-family: var(--font-heading);
+  font-size: var(--step--1);
+  font-weight: 500;
+  color: var(--bg);
+  background: var(--heading);
+  border-radius: 4px;
+  text-decoration: none;
+  transform: translateY(calc(-100% - var(--space-3)));
+}
+
+.skip:focus-visible {
+  transform: none;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.main:focus {
+  outline: none;
+}
+
+/* Opening: a full screen above the rail. A bar on top, then the name edge to edge on one line,
+   the line, a rule and the index, all sitting at the bottom of the screen. */
+.open {
+  width: min(100% - 2 * var(--gutter), var(--page-max));
+  margin-inline: auto;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--space-3) var(--space-4);
+  container-type: inline-size;
+}
+
+.open__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.open__bar .theme {
+  margin: 0;
+}
+
+/* Sized so the full name fills the width: it measures about 9 em in Rubik at this weight and tracking. */
+.open__name {
+  margin-top: auto;
+  padding-top: var(--space-6);
+  font-size: calc(100cqi / 9.15);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  color: var(--fg);
+  white-space: nowrap;
+  text-wrap: nowrap;
+}
+
+/* Each word clips its letters so they rise from below the baseline. The padding keeps descenders. */
+.open__word {
+  display: inline-block;
+  overflow: clip;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.open__char {
+  display: inline-block;
+}
+
+.js .open__char {
+  animation: open-rise 1100ms var(--ease-out) both;
+  animation-delay: calc(120ms + var(--i) * 32ms);
+}
+
+@keyframes open-rise {
+  from {
+    transform: translateY(110%);
+  }
+}
+
+/* Too narrow for one line: one word per line, sized to the longest word. */
+@container (max-width: 34rem) {
+  .open__name {
+    font-size: calc(100cqi / 3.85);
+  }
+
+  .open__word {
+    display: block;
+  }
+}
+
+.open__line {
+  margin-top: var(--space-4);
+  font-size: var(--step-2);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--fg-muted);
+}
+
+/* Once opening.ts has measured it, the line is set on one row at the size that fills the width. */
+.open__line[data-fitted] {
+  font-size: var(--fit);
+  line-height: 1.05;
+  white-space: nowrap;
+  max-width: none;
+}
+
+.open__bar-end {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+}
+
+.open__now {
+  display: flex;
+  gap: 0.75em;
+  align-items: baseline;
+}
+
+.open__now a {
+  color: var(--accent-ink);
+}
+
+@media (max-width: 40rem) {
+  .open__now {
+    display: none;
+  }
+}
+
+.open__rule {
+  margin-top: var(--space-4);
+}
+
+.open__index {
+  margin-top: var(--space-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-heading);
+}
+
+/* Positioned so each link's offsetLeft/offsetTop is measured from here (opening.ts). */
+.open__index ol {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+}
+
+/* Laid out like a rail link (number column, then label), so it lands on one without a jump. */
+.open__index li a {
+  display: inline-grid;
+  grid-template-columns: 2.25rem auto;
+  align-items: baseline;
+  color: var(--fg-muted);
+  text-decoration: none;
+  font-size: var(--step--1);
+  transition: color 200ms ease;
+}
+
+.open__index li a:hover {
+  color: var(--heading);
+}
+
+.open__index li a:hover .draw {
+  background-size: 100% 1px;
+}
+
+.open__num {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+
+.open__down {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 50%;
+  color: var(--heading);
+  text-decoration: none;
+  font-size: var(--step-0);
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+.open__down:hover {
+  background: var(--heading);
+  color: var(--bg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .open__down {
+    animation: open-bob 2.4s ease-in-out 2s infinite;
+  }
+}
+
+@keyframes open-bob {
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+/* The opening carries the toggle on small screens, so the home page needs no rail row there. */
+@media (max-width: 63.98rem) {
+  .page--home .rail {
+    display: none;
+  }
+}
+
+/* The index morph (desktop; opening.ts). While the opening's row is on screen, <html> has
+   .index-row and the rail is hidden; when it goes, the rail's links fly in from the row (an
+   animation in opening.ts) and the name and toggle fade in after them. */
+.rail__home,
+.rail .theme {
+  transition: opacity 300ms ease, color 200ms ease;
+  transition-delay: 350ms;
+}
+
+.rail__list > .rail__item > a {
+  transition: color 200ms ease, transform 300ms var(--ease-out), opacity 300ms ease;
+}
+
+.index-row .rail__list > .rail__item > a,
+.index-row .rail__home,
+.index-row .rail .theme {
+  opacity: 0;
+  pointer-events: none;
+  transition-delay: 0ms;
+}
+
+/* The wheel (desktop home page; opening.ts sets .drum on <html>). The rail's rows sit on a drum
+   like an iOS picker, shrinking back, tilting and fading with distance from the middle; the
+   current chapter's row sits lit at the middle. opening.ts places each row. */
+@media (min-width: 64rem) {
+  .drum .rail {
+    height: 100dvh;
+    max-height: none;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .drum .rail nav {
+    position: relative;
+    min-height: 0;
+  }
+
+  .drum .rail__list {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: block;
+    perspective: 700px;
+    perspective-origin: 0 var(--band, 40%);
+  }
+
+  .drum .rail__item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    transform-origin: 0 50%;
+    backface-visibility: hidden;
+  }
+
+  .drum .rail__item a,
+  .drum .rail__item--sub a {
+    display: flex;
+    align-items: center;
+    padding-left: 0;
+    font-size: var(--step--1);
+    /* The drum fades its rows with distance, so they start from the full text colour: the rows
+       beside the middle keep 4.5:1 that way. Further out the fade is the drum's depth; focus turns
+       any row to the middle (opening.ts). */
+    color: var(--fg);
+  }
+
+  .drum .rail__num {
+    flex: none;
+    width: 2.25rem;
+  }
+
+  .drum .rail__item--sub .rail__num {
+    width: 2.25rem;
+  }
+
+  .drum .rail__label {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  /* The current row sits lit at the middle of the drum; the middle already says where, so no nudge. */
+  .drum .rail__item a[aria-current='true'] {
+    transform: none;
+    color: var(--heading);
+  }
+
+  .drum .rail__item a:hover {
+    color: var(--heading);
+  }
+
+  /* A project fits one screen under its title: the capture is scaled to the height left. */
+  .drum .capture {
+    width: auto;
+  }
+
+  .drum .capture img {
+    width: auto;
+    max-height: calc(100svh - 16rem);
+  }
+
+  /* The chapter at the middle of the wheel is lit; the others' headings wait dimmed. Only the
+     headings: they are large text, which keeps 3:1 at this opacity in both schemes, where body text
+     dimmed with them would fall below the 4.5:1 it needs. Its content rises in each time its row
+     turns to the middle. */
+  .drum .chapter__title h2 {
+    transition: opacity 500ms ease;
+  }
+
+  .drum .chapter:not(.is-active) .chapter__title h2 {
+    opacity: 0.6;
+  }
+
+  .drum .chapter.is-active .chapter__deck,
+  .drum .chapter.is-active .chapter__body > * {
+    animation: wheel-rise 700ms var(--ease-out) both;
+  }
+
+  .drum .chapter.is-active .chapter__body > :nth-child(1) {
+    animation-delay: 80ms;
+  }
+
+  .drum .chapter.is-active .chapter__body > :nth-child(2) {
+    animation-delay: 160ms;
+  }
+
+  .drum .chapter.is-active .chapter__body > :nth-child(3) {
+    animation-delay: 240ms;
+  }
+
+  .drum .chapter.is-active .chapter__body > :nth-child(n + 4) {
+    animation-delay: 320ms;
+  }
+}
+
+@keyframes wheel-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+/* Rules that draw in from the left when revealed. */
+.rule {
+  height: 1px;
+  background: var(--rule-strong);
+  transform-origin: left;
+  width: 100%;
+}
+
+.js [data-reveal] .rule,
+.js .rule[data-reveal] {
+  transform: scaleX(0);
+  transition: transform 900ms var(--ease-out) 100ms;
+}
+
+.js [data-reveal].is-visible .rule,
+.js .rule[data-reveal].is-visible {
+  transform: scaleX(1);
+}
+
+/* Chapters */
+.chapter {
+  padding-block: var(--space-6);
+}
+
+.chapter + .chapter {
+  padding-top: 0;
+}
+
+.chapter__head {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+/* The rail link, set large: a rail link is 0.9375rem with a 2.25rem number column and a 0.75rem
+   number, so here the column is 2.4em and the number 0.8em of the title's size. */
+.chapter__title {
+  display: grid;
+  grid-template-columns: 2.4em minmax(0, 1fr);
+  align-items: baseline;
+  font-family: var(--font-heading);
+  font-size: var(--step-3);
+  line-height: 1.05;
+}
+
+.chapter__title h2 {
+  font-size: 1em;
+}
+
+.chapter__num {
+  font-size: 0.8em;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-muted);
+}
+
+.chapter__deck {
+  margin-top: var(--space-1);
+  font-size: var(--step-1);
+  line-height: 1.4;
+  color: var(--fg-muted);
+  max-width: 30em;
+}
+
+/* The lead chapter (Emerald) opens taller: a bigger deck and more air before the plate. */
+.chapter--lead .chapter__deck {
+  font-size: var(--step-2);
+  line-height: 1.3;
+  color: var(--fg);
+  max-width: 24em;
+}
+
+.chapter--lead .chapter__head {
+  margin-bottom: var(--space-4);
+}
+
+/* A passage with its label hanging in the margin on wide screens. */
+.passage {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.passage + .passage {
+  margin-top: var(--space-4);
+}
+
+/* The first paragraph of a passage sits one step up. */
+.passage p:first-child {
+  font-size: var(--step-1);
+  line-height: 1.5;
+}
+
+@media (min-width: 52rem) {
+  .passage {
+    grid-template-columns: var(--label-col) minmax(0, 1fr);
+    column-gap: var(--space-4);
+  }
+
+  .passage h3 {
+    padding-top: 0.45rem;
+  }
+}
+
+/* The plate: the lead chapter's picture, bleeding to the right edge of the viewport on wide screens.
+   In the lead chapter it comes before the passages. */
+.plate {
+  margin-block: 0 var(--space-5);
+}
+
+.plate__img {
+  position: relative;
+  background: var(--bg-elevated);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.plate__img img {
+  width: 100%;
+}
+
+/* The poster's carousel (scripts/carousel.ts): slides stacked in one cell, the current one shown,
+   the others faded out. A click on the picture shows the next; the dots under it pick one. */
+.slides {
+  display: grid;
+  cursor: pointer;
+}
+
+.slide {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 500ms ease,
+    visibility 0s 500ms;
+}
+
+.slide.is-current {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 500ms ease;
+}
+
+/* Each slide's light or dark version, following the site's scheme: the toggle if set, else the system.
+   The version not shown is display: none, so it is never fetched. */
+.slide__dark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .slide__dark {
+    display: block;
+  }
+
+  :root:not([data-theme='light']) .slide__light {
+    display: none;
+  }
+}
+
+:root[data-theme='dark'] .slide__dark {
+  display: block;
+}
+
+:root[data-theme='dark'] .slide__light {
+  display: none;
+}
+
+.slides__dots + figcaption {
+  margin-top: 0;
+}
+
+.slides__dots {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: var(--space-2);
+  margin-left: -0.5rem;
+}
+
+/* A small dot in a larger hit area. */
+.slides__dot {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.slides__dot::before {
+  content: '';
+  display: block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--fg-muted);
+  transition: background-color 200ms ease, border-color 200ms ease, transform 300ms var(--ease-out);
+}
+
+.slides__dot:hover::before {
+  border-color: var(--heading);
+}
+
+.slides__dot[aria-pressed='true']::before {
+  background: var(--heading);
+  border-color: var(--heading);
+  transform: scale(1.15);
+}
+
+.slides__dot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 0;
+  border-radius: 50%;
+}
+
+.plate__missing {
+  aspect-ratio: 16 / 10;
+  display: grid;
+  place-items: center;
+  color: var(--fg-muted);
+  font-size: var(--step--1);
+  padding: var(--space-2);
+  text-align: center;
+}
+
+.plate figcaption {
+  margin-top: var(--space-2);
+  font-size: var(--step--1);
+  color: var(--fg-muted);
+  max-width: var(--measure);
+}
+
+@media (min-width: 64rem) {
+  .plate__img {
+    width: calc(100% + max(var(--gutter), (100vw - var(--page-max)) / 2));
+    border-right: 0;
+    border-radius: 6px 0 0 6px;
+  }
+}
+
+/* The live demo: a control over the poster, then the iframe in the poster's place.
+   Shared by the plate and by a project's capture. */
+.plate__controls {
+  position: absolute;
+  inset: auto 0.9rem 0.9rem auto;
+}
+
+@media (min-width: 52rem) {
+  .plate__controls {
+    inset: auto var(--space-3) var(--space-3) auto;
+  }
+}
+
+.plate__button {
+  appearance: none;
+  border: 1px solid var(--rule-strong);
+  background: var(--bg);
+  color: var(--heading);
+  font: inherit;
+  font-family: var(--font-heading);
+  font-size: var(--step--1);
+  font-weight: 500;
+  padding: 0.7em 1.1em;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.35);
+  transition: background-color 200ms ease, color 200ms ease, transform 300ms var(--ease-out);
+}
+
+.plate__button::after {
+  content: '→';
+  transition: transform 300ms var(--ease-out);
+}
+
+.plate__button:hover {
+  background: var(--heading);
+  color: var(--bg);
+}
+
+.plate__button:hover::after {
+  transform: translateX(3px);
+}
+
+.plate__button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.plate__button--close::after {
+  content: '×';
+}
+
+.plate__button--close:hover::after {
+  transform: none;
+}
+
+[data-demo-state='open'] .plate__button:not(.plate__button--close),
+.plate__button--close {
+  display: none;
+}
+
+[data-demo-state='open'] .plate__button--close {
+  display: inline-flex;
+}
+
+.plate__img--live {
+  aspect-ratio: 16 / 10;
+}
+
+@media (min-width: 52rem) {
+  .plate__img--live {
+    min-height: 36rem;
+  }
+}
+
+.plate__img--live > img,
+.plate__img--live > .slides,
+.plate__img--live > .plate__missing {
+  visibility: hidden;
+}
+
+.plate__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--bg);
+}
+
+/* The one-line note printed while a demo is not live and there is no plate. */
+.pending {
+  margin-bottom: var(--space-4);
+}
+
+/* The claim check (components/ClaimCheck.astro, scripts/claim.ts): two documents side by side, the
+   claim under them. Both rows share one grid, three columns with the operator in the middle, so the
+   wires and figures line up under their documents. claim.ts walks data-step from 0 to 3; the page
+   prints step 3, finished. */
+.claim {
+  margin-block: 0 var(--space-5);
+}
+
+.claim__stage {
+  --mid: 1rem;
+  --pad: var(--space-2);
+  position: relative;
+  padding: var(--pad);
+  background: var(--bg-elevated);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 40rem) {
+  .claim__stage {
+    --mid: 4rem;
+    --pad: var(--space-4);
+    font-size: var(--step--1);
+  }
+}
+
+.claim p + p {
+  margin-top: 0;
+}
+
+.claim code {
+  font-family: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.85em;
+}
+
+/* Pauses the loop (scripts/claim.ts); shown only while there is a loop to pause. */
+.claim__toggle {
+  display: none;
+  position: absolute;
+  top: var(--pad);
+  right: var(--pad);
+  appearance: none;
+  padding: 0.3rem 0.7rem;
+  font-family: var(--font-heading);
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--heading);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.claim--looping .claim__toggle {
+  display: block;
+}
+
+.claim__toggle:hover {
+  border-color: var(--rule-strong);
+}
+
+.claim__toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.claim--looping .claim__question {
+  padding-right: 6rem;
+}
+
+.claim__question {
+  margin-bottom: var(--space-3);
+  font-family: var(--font-heading);
+  font-size: var(--step-1);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--heading);
+}
+
+.claim__docs,
+.claim__terms {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--mid) minmax(0, 1fr);
+}
+
+.claim__doc {
+  grid-row: 1;
+  grid-column: 1;
+  padding: 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+.claim__doc + .claim__doc {
+  grid-column: 3;
+}
+
+@media (min-width: 40rem) {
+  .claim__doc {
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
+.claim__doc .label {
+  margin-bottom: 0.5rem;
+}
+
+.claim__shop {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  color: var(--heading);
+}
+
+.claim__date {
+  color: var(--fg-muted);
+  margin-bottom: 0.5rem;
+}
+
+.claim__items li,
+.claim__total,
+.claim__rows li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.claim__input {
+  width: 5.5ch;
+  padding: 0 0.1rem;
+  font: inherit;
+  color: inherit;
+  text-align: right;
+  background: none;
+  border: 0;
+  border-bottom: 1px dashed transparent;
+  border-radius: 2px;
+  transition: border-color 300ms ease;
+}
+
+/* Once the claim has played, the prices say they can be changed. */
+.claim--live[data-step='3'] .claim__input {
+  border-bottom-color: var(--rule-strong);
+}
+
+.claim__input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.claim__input[aria-invalid] {
+  color: var(--bad);
+}
+
+.claim__total {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--rule);
+  font-weight: 600;
+}
+
+.claim__rows li {
+  padding-block: 0.3rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.claim__rows li:last-child {
+  border-bottom: 0;
+}
+
+.claim__row-date {
+  display: none;
+  flex: none;
+  width: 3.5em;
+  color: var(--fg-muted);
+}
+
+.claim__row-name {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (min-width: 52rem) {
+  .claim__row-date {
+    display: inline;
+  }
+}
+
+/* The two figures the claim compares, outlined from step 1, in the verdict's colour once it is in. */
+.claim__mark {
+  position: relative;
+}
+
+.claim__mark::after {
+  content: '';
+  position: absolute;
+  inset: -0.15rem -0.45rem;
+  border: 1.5px solid var(--accent);
+  border-radius: 4px;
+  pointer-events: none;
+  transition: opacity 300ms ease, transform 500ms var(--ease-out), border-color 300ms ease;
+}
+
+.claim[data-step='0'] .claim__mark::after {
+  opacity: 0;
+  transform: scale(0.96);
+}
+
+.claim:has([data-verdict='failed']) .claim__mark::after {
+  border-color: var(--bad);
+}
+
+.claim:has([data-verdict='holds']) .claim__mark::after {
+  border-color: var(--good);
+}
+
+/* The claim. */
+.claim__check {
+  --tone: var(--fg-muted);
+  position: relative;
+  margin-top: var(--space-4);
+  padding: var(--space-2) 0;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  transition: border-color 300ms ease;
+}
+
+.claim__check[data-verdict='failed'] {
+  --tone: var(--bad);
+}
+
+.claim__check[data-verdict='holds'] {
+  --tone: var(--good);
+}
+
+.claim__check:not([data-verdict='checking']) {
+  border-color: var(--tone);
+}
+
+/* A wire hangs from each document's centre down to the claim's top edge, drawn from the top. */
+.claim__wire {
+  position: absolute;
+  bottom: 100%;
+  width: 1.5px;
+  height: calc(var(--space-4) + 1px);
+  margin-left: -0.75px;
+  background: var(--accent);
+  transform-origin: top;
+  transition: transform 550ms var(--ease-out), background-color 300ms ease;
+}
+
+.claim__wire--left {
+  left: calc((100% - var(--mid)) / 4);
+}
+
+.claim__wire--right {
+  left: calc(100% - (100% - var(--mid)) / 4);
+}
+
+.claim__check:not([data-verdict='checking']) .claim__wire {
+  background: var(--tone);
+}
+
+.claim[data-step='0'] .claim__wire,
+.claim[data-step='1'] .claim__wire {
+  transform: scaleY(0);
+}
+
+.claim__head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: none;
+  padding-inline: 0.75rem;
+}
+
+.claim__dot {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--tone);
+  transition: background-color 300ms ease;
+}
+
+.claim__check[data-verdict='checking'] .claim__dot {
+  animation: claim-pulse 1s ease-in-out infinite;
+}
+
+.claim__badge {
+  padding: 0 0.4em;
+  font-family: var(--font-heading);
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tone);
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  transition: color 300ms ease;
+}
+
+.claim__terms {
+  align-items: end;
+  margin-top: var(--space-2);
+  text-align: center;
+}
+
+.claim__term {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.claim__term code {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 0.4em;
+  color: var(--fg-muted);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+
+.claim__term b {
+  font-family: var(--font-heading);
+  font-size: var(--step-1);
+  font-weight: 500;
+  color: var(--heading);
+  transition: opacity 350ms ease 250ms, transform 450ms var(--ease-out) 250ms;
+}
+
+@media (min-width: 40rem) {
+  .claim__term b {
+    font-size: var(--step-2);
+  }
+}
+
+/* The figures arrive down the wires at step 2. */
+.claim[data-step='0'] .claim__term b,
+.claim[data-step='1'] .claim__term b {
+  opacity: 0;
+  transform: translateY(-0.75em);
+}
+
+/* Back to the start at once, with no movement on the way. */
+.claim[data-step='0'] .claim__term b,
+.claim[data-step='0'] .claim__wire,
+.claim[data-step='0'] .claim__mark::after {
+  transition: none;
+}
+
+.claim__op {
+  display: grid;
+  justify-items: center;
+  align-self: center;
+  padding-top: 1.4rem;
+  color: var(--tone);
+}
+
+.claim__eq {
+  font-family: var(--font-heading);
+  font-size: var(--step-1);
+  line-height: 1;
+}
+
+/* Two names for one movement, so it plays again each time the verdict turns. */
+.claim__check[data-verdict='failed'] .claim__eq {
+  animation: claim-fail 450ms var(--ease-out);
+}
+
+.claim__check[data-verdict='holds'] .claim__eq {
+  animation: claim-hold 450ms var(--ease-out);
+}
+
+.claim__op small {
+  display: none;
+  font-size: var(--label);
+  color: var(--fg-muted);
+}
+
+@media (min-width: 40rem) {
+  .claim__op small {
+    display: block;
+  }
+}
+
+.claim__msg {
+  min-height: 1.5em;
+  max-width: none;
+  margin-top: var(--space-2);
+  padding-inline: 0.75rem;
+  color: var(--tone);
+  text-align: center;
+  transition: opacity 300ms ease;
+}
+
+.claim__check[data-verdict='checking'] .claim__msg {
+  color: var(--fg-muted);
+}
+
+.claim figcaption {
+  margin-top: var(--space-2);
+  font-size: var(--step--1);
+  color: var(--fg-muted);
+  max-width: var(--measure);
+}
+
+/* Without script nothing can be changed, so the hint waits for it. */
+.claim__hint {
+  display: none;
+}
+
+.claim--live .claim__hint {
+  display: inline;
+}
+
+/* The reel (components/Reel.astro, scripts/reel.ts): a project's clips stacked in one wide frame
+   over the poster, the current one shown, and a row of steps under it whose bars fill as their
+   clips play. Without script only the poster shows. */
+.reel {
+  margin-block: var(--space-3) var(--space-1);
+}
+
+.reel__frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+}
+
+.reel--live .reel__frame {
+  cursor: pointer;
+}
+
+/* Laid over the frame, so the frame's 16:9 sizes them and not the other way round: the 16:10
+   poster in the flow would stretch the frame and crop the clips' sides. */
+.reel__poster,
+.reel__clip {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* The poster is 16:10 and the frame 16:9: it keeps its top and left, where the sidebar is. */
+.reel__poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left top;
+}
+
+/* The clips are 16:9 like the frame; contain keeps every edge of them should either ever differ. */
+.reel__clip {
+  display: block;
+  object-fit: contain;
+  background: var(--bg-elevated);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 400ms ease, visibility 0s linear 400ms;
+}
+
+.reel--rolling .reel__clip.is-current {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 400ms ease;
+}
+
+.reel__toggle {
+  display: none;
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  appearance: none;
+  padding: 0.3rem 0.7rem;
+  font-family: var(--font-heading);
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--heading);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.reel--live .reel__toggle {
+  display: block;
+}
+
+.reel__toggle:hover {
+  border-color: var(--rule-strong);
+}
+
+.reel__toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.reel__steps {
+  display: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2) var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.reel--live .reel__steps {
+  display: grid;
+}
+
+@media (min-width: 52rem) {
+  .reel__steps {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+}
+
+.reel__step {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.75rem 0 0;
+  font: inherit;
+  font-size: var(--step--1);
+  line-height: 1.35;
+  text-align: left;
+  color: var(--fg-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+.reel__step:hover,
+.reel__step[aria-pressed='true'] {
+  color: var(--heading);
+}
+
+.reel__step:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* reel.ts sets --p on each step: 1 for those played, the share played for the current one. */
+.reel__bar {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  overflow: hidden;
+  background: var(--rule);
+}
+
+.reel__bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--heading);
+  transform-origin: left;
+  transform: scaleX(var(--p, 0));
+}
+
+.reel__num {
+  font-family: var(--font-heading);
+  font-size: var(--label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes claim-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes claim-fail {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.5);
+  }
+  55% {
+    transform: scale(1.3) translateX(-2px);
+  }
+  75% {
+    transform: scale(1.15) translateX(2px);
+  }
+}
+
+@keyframes claim-hold {
+  40% {
+    transform: scale(1.4);
+  }
+}
+
+/* A product page (Usuals): the name as the page heading, then the project as on the front page. */
+.product__name {
+  font-size: var(--step-4);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  color: var(--fg);
+}
+
+.product__legal {
+  margin-top: var(--space-5);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+/* Prose pages beyond the front page (a policy, an essay): plain Markdown, set like a chapter. */
+.prose h1 {
+  font-size: var(--step-3);
+}
+
+.prose h2 {
+  font-size: var(--step-2);
+  margin-top: var(--space-5);
+}
+
+.prose h3 {
+  font-size: var(--step-1);
+  margin-top: var(--space-4);
+}
+
+.prose p,
+.prose ul,
+.prose ol {
+  max-width: var(--measure);
+  margin-top: var(--space-2);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.25em;
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li + li {
+  margin-top: var(--space-1);
+}
+
+/* A table scrolls sideways on its own when it is wider than the column, so the page never does
+   (and since the page clips what overflows it, the table's far side would otherwise be lost). */
+.prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  margin-block: var(--space-3);
+  border-collapse: collapse;
+  font-size: var(--step--1);
+  line-height: 1.45;
+}
+
+.prose th,
+.prose td {
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rule);
+}
+
+.prose th {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  color: var(--heading);
+  border-bottom-color: var(--rule-strong);
+}
+
+.prose code {
+  font-family: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  overflow-wrap: anywhere;
+}
+
+/* Link rows under a chapter. */
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin-top: var(--space-4);
+  font-family: var(--font-heading);
+  font-weight: 500;
+}
+
+.links a {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.links a::after {
+  content: '↗';
+  font-size: 0.85em;
+  color: var(--fg-muted);
+  transition: transform 300ms var(--ease-out), color 200ms ease;
+}
+
+.links a:hover::after {
+  transform: translate(2px, -2px);
+  color: var(--accent);
+}
+
+.links a[href^='#']::after,
+.links a[href^='/']::after {
+  content: '→';
+}
+
+.links a[href^='#']:hover::after,
+.links a[href^='/']:hover::after {
+  transform: translateX(3px);
+}
+
+.links__meta {
+  align-self: center;
+}
+
+/* What a project is built with: a label, then the names with a thin dot between. Each name
+   keeps its dot at its end, so a wrapped row never starts with one. */
+.stack {
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-3);
+  display: grid;
+  gap: 0.35rem;
+}
+
+.stack__items {
+  font-family: var(--font-heading);
+  font-size: var(--step--1);
+  line-height: 1.7;
+  color: var(--fg);
+}
+
+.stack__items > span {
+  white-space: nowrap;
+}
+
+.stack__items > span:not(:last-child)::after {
+  content: ' ·';
+  margin-right: 0.35em;
+  color: var(--fg-muted);
+}
+
+/* One paragraph set large: how I work. */
+.large p {
+  font-size: var(--step-2);
+  line-height: 1.4;
+  max-width: 28em;
+  color: var(--fg);
+}
+
+/* A project: header line, then text beside the capture. Always open. */
+.project + .project {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--rule);
+}
+
+.project__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+}
+
+.project__num {
+  flex-basis: 100%;
+}
+
+.project__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.project__icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--heading);
+  display: inline-flex;
+  flex: none;
+}
+
+.project__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.project__name {
+  font-size: var(--step-2);
+  letter-spacing: -0.015em;
+}
+
+.project__grid {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.project__line {
+  font-size: var(--step-1);
+  line-height: 1.4;
+  color: var(--fg-muted);
+}
+
+.project__line + .project__body,
+.project__body + .points,
+.project__line + .points {
+  margin-top: var(--space-3);
+}
+
+.project__text .links {
+  margin-top: var(--space-4);
+}
+
+/* The capture is printed as it is, at its natural width, no frame. With a demo, it is the poster. */
+.capture {
+  width: min(24rem, 100%);
+}
+
+.capture .plate__img {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  width: auto;
+}
+
+.capture img {
+  width: 100%;
+}
+
+@media (min-width: 52rem) {
+  .project__num {
+    flex-basis: auto;
+  }
+
+  .project__kicker:last-child {
+    margin-left: auto;
+  }
+
+  .project__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
+    column-gap: var(--column-gap);
+    align-items: start;
+  }
+
+  .capture {
+    justify-self: end;
+    width: 100%;
+  }
+}
+
+/* A project with its demo open takes the whole column for the frame. */
+.project:has(.capture[data-demo-state='open']) .project__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.project:has(.capture[data-demo-state='open']) .capture {
+  width: 100%;
+  justify-self: stretch;
+}
+
+.capture .plate__img--live {
+  background: var(--bg-elevated);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+}
+
+/* Points: a term and one sentence. */
+.points {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+  max-width: var(--measure);
+}
+
+.points__item {
+  display: grid;
+  align-content: start;
+  gap: 0.15rem;
+}
+
+/* Side by side on a wide screen, so a project with several points still fits one screen. */
+@media (min-width: 64rem) {
+  .points {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3) var(--space-4);
+  }
+}
+
+.points dt {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  color: var(--heading);
+}
+
+.points dd {
+  margin: 0;
+  color: var(--fg);
+}
+
+/* Contact: the address set large, the rest beneath. */
+.contact__email {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: var(--step-3);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.12em;
+  overflow-wrap: anywhere;
+}
+
+/* Footer */
+.footer {
+  margin-top: var(--space-6);
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+  color: var(--fg-muted);
+  font-size: var(--step--1);
+}
+
+.footer a {
+  color: var(--fg-muted);
+  text-decoration-color: transparent;
+}
+
+.footer a:hover {
+  color: var(--heading);
+}
+
+/* Placeholder text that has not been written yet. Disappears once the brackets are gone. */
+.placeholder {
+  background: var(--placeholder-bg);
+  color: var(--placeholder-fg);
+  border: 1px dashed currentColor;
+  border-radius: 4px;
+  padding: 0 0.3em;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Motion.
+   Fade on entry for the first screen, reveal on scroll for the rest, and a cross-fade between pages
+   handled by Astro's ClientRouter. All of it is off under prefers-reduced-motion. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--duration) var(--ease-out),
+    transform var(--duration) var(--ease-out);
+}
+
+.js [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.js [data-reveal][data-reveal-delay='1'] {
+  transition-delay: 120ms;
+}
+
+.js [data-reveal][data-reveal-delay='2'] {
+  transition-delay: 240ms;
+}
+
+.js [data-reveal][data-reveal-delay='3'] {
+  transition-delay: 360ms;
+}
+
+/* 4 to 6 follow the name's letters in the opening. */
+.js [data-reveal][data-reveal-delay='4'] {
+  transition-delay: 650ms;
+}
+
+.js [data-reveal][data-reveal-delay='5'] {
+  transition-delay: 800ms;
+}
+
+.js [data-reveal][data-reveal-delay='6'] {
+  transition-delay: 950ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .js .open__char {
+    animation: none;
+  }
+
+  .js [data-reveal],
+  .js .rule {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

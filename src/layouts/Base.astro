@@ -1,0 +1,99 @@
+---
+/**
+ * Shared shell: head tags, fonts, global styles, the ClientRouter for page
+ * transitions, the index rail (name on top, chapters below), the reveal
+ * script, and the footer.
+ */
+import { ClientRouter } from 'astro:transitions';
+import { site, ui, intro } from '../data/copy';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** og:site_name. A product page names the product here (the Usuals page must read exactly "Usuals"). */
+  siteName?: string;
+  /** Chapters listed in the rail, in order, with any sub-chapters. Empty on pages that have none. */
+  chapters?: { id: string; label: string; children?: { id: string; label: string }[] }[];
+}
+const { title = site.title, description = site.description, siteName = site.domain, chapters = [] } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/og.png', Astro.site);
+const pad = (n: number) => String(n).padStart(2, '0');
+const isHome = Astro.url.pathname === '/';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e1319" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={siteName} />
+    <!-- The link preview card, drawn by `npm run og-image` (scripts/og-image.html). -->
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name}: ${intro.line}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="generator" content={Astro.generator} />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      // Apply a remembered colour scheme before first paint. The toggle writes `theme`
+      // to localStorage; with nothing stored the page follows the system.
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+    <ClientRouter />
+  </head>
+  <body>
+    <a href="#main" class="skip">{ui.skip}</a>
+    <slot name="hero" />
+    <div class:list={['page', { 'page--home': isHome }]}>
+      <aside class="rail" transition:name="rail">
+        <a href="/" class="rail__home">{site.name}</a>
+        {chapters.length > 0 && (
+          <nav aria-label="Chapters">
+            <!-- One flat list, sub-chapters as their own rows, so each row can turn on the wheel (opening.ts). -->
+            <ol class="rail__list">
+              {chapters.flatMap((c, i) => [
+                <li class="rail__item">
+                  <a href={`#${c.id}`}><span class="rail__num">{pad(i + 1)}</span><span class="rail__label">{c.label}</span></a>
+                </li>,
+                ...(c.children ?? []).map((s, j) => (
+                  <li class="rail__item rail__item--sub">
+                    <a href={`#${s.id}`}><span class="rail__num">{pad(i + 1)}.{j + 1}</span><span class="rail__label">{s.label}</span></a>
+                  </li>
+                )),
+              ])}
+            </ol>
+          </nav>
+        )}
+        <button type="button" class="theme" data-theme-toggle>
+          <span class="visually-hidden">{ui.theme.label}: </span>
+          <span class="theme__to-dark">{ui.theme.toDark}</span>
+          <span class="theme__to-light">{ui.theme.toLight}</span>
+        </button>
+      </aside>
+      <main class="main" id="main" tabindex="-1">
+        <slot />
+        <footer class="footer">
+          <span>{site.copyright}</span>
+          <a href="/">{site.domain}</a>
+        </footer>
+      </main>
+    </div>
+    <script src="../scripts/reveal.ts"></script>
+  </body>
+</html>

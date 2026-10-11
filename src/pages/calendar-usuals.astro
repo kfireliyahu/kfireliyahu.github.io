@@ -1,0 +1,41 @@
+---
+/**
+ * Usuals' entry page, at /calendar-usuals. The extension's sidebar footer link
+ * and its manifest homepage_url point here (pool.emd M7 U6, D-27).
+ *
+ * Google's OAuth brand verification compares the consent screen's app name
+ * with this page, so the title, the heading and og:site_name all read exactly
+ * pages.usuals.name. "Works with Google Calendar" sits under the name, and the
+ * trademark line closes the page. The text is usuals.line and usuals.body from
+ * the front page, printed with the same Project component.
+ */
+import Base from '../layouts/Base.astro';
+import Text from '../components/Text.astro';
+import Project from '../components/Project.astro';
+import { usuals, pages, contact, type Link } from '../data/copy';
+
+const page = pages.usuals;
+
+// The privacy link prints once the policy's page file has moved out of _drafts/.
+const privacyLive = Object.keys(import.meta.glob('./calendar-usuals/privacy.astro')).length > 0;
+
+const links: Link[] = [
+  ...(page.store ? [page.store] : []),
+  ...(privacyLive ? [{ label: page.privacy, href: pages.usualsPrivacy.path }] : []),
+  { label: `${page.support}: ${contact.email}`, href: `mailto:${contact.email}` },
+];
+---
+<Base title={page.name} description={page.description} siteName={page.name}>
+  <article class="chapter product" aria-labelledby="product-heading">
+    <header class="chapter__head" data-reveal>
+      <div class="rule"></div>
+      <h1 id="product-heading" class="product__name">{page.name}</h1>
+      <p class="label">{page.worksWith}</p>
+      {usuals.line && <p class="chapter__deck"><Text text={usuals.line} /></p>}
+    </header>
+
+    <Project project={{ ...usuals, id: 'about', links }} showName={false} showLine={false} />
+
+    <p class="label product__legal">{page.trademark}</p>
+  </article>
+</Base>

@@ -1,0 +1,13 @@
+---
+/**
+ * Prints a string. If it is still a [[placeholder]], it is wrapped so it stands
+ * out in the preview. Once the brackets are gone it renders as plain text.
+ */
+import { isPlaceholder } from '../data/copy';
+
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+---
+{isPlaceholder(text) ? <mark class="placeholder">{text}</mark> : text}

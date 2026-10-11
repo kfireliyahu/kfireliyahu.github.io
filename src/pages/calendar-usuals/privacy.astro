@@ -1,0 +1,23 @@
+---
+/**
+ * Usuals privacy policy, at the stable path /calendar-usuals/privacy, for its
+ * Chrome Web Store OAuth review. The text is src/content/calendar-usuals-privacy.md,
+ * published as written from the extension's PRIVACY.md. The Usuals page links
+ * here. Like that page, it names the product exactly "Usuals" in og:site_name.
+ */
+import Base from '../../layouts/Base.astro';
+import { pages } from '../../data/copy';
+import { Content, frontmatter } from '../../content/calendar-usuals-privacy.md';
+
+const page = pages.usualsPrivacy;
+---
+<Base title={frontmatter?.title ?? page.title} description={page.description} siteName={pages.usuals.name}>
+  <article class="chapter prose" data-reveal>
+    <header class="chapter__head">
+      <div class="rule"></div>
+      <h1>{frontmatter?.title ?? page.title}</h1>
+      {frontmatter?.effective && <p class="label">Effective {frontmatter.effective}</p>}
+    </header>
+    <Content />
+  </article>
+</Base>

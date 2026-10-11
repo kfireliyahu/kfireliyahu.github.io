@@ -1,0 +1,10 @@
+---
+import Text from './Text.astro';
+
+interface Props {
+  body: string | string[];
+}
+const { body } = Astro.props;
+const paragraphs = Array.isArray(body) ? body : [body];
+---
+{paragraphs.map((p) => <p><Text text={p} /></p>)}

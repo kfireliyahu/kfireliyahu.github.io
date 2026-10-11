@@ -1,0 +1,102 @@
+---
+/**
+ * One project, always open. Used for every project on the page: Usuals as the
+ * body of chapter 03 (and of its own page), Tetra and 24 Hours as sub-chapters
+ * 04.1 and 04.2 under Earlier work.
+ *
+ * Header: running number (when given), icon, name, kicker. Then the text on
+ * the left (line, paragraphs, points, links) and the capture on the right at
+ * its natural width. The capture is printed as it is; the old-site captures
+ * already carry their own device frame. Images render only if the file
+ * exists in public/, so a missing one leaves no hole.
+ */
+import Text from './Text.astro';
+import Paragraphs from './Paragraphs.astro';
+import Stack from './Stack.astro';
+import Reel from './Reel.astro';
+import { isPlaceholder, type Project } from '../data/copy';
+import { inPublic, readPublic } from '../lib/public';
+
+/**
+ * An SVG icon is inlined so it can take the page's colour: black fills become
+ * currentColor, brand colours stay. Width and height come from CSS, so the
+ * root <svg> loses its own; its shapes keep theirs.
+ */
+function inlineSvg(src: string): string {
+  return readPublic(src)
+    .replace(/<\?xml[^>]*>/, '')
+    .replace(/<svg\b[^>]*>/, (tag) => tag.replace(/\s(width|height)=(["'])[^"']*\2/g, ''))
+    .replace(/fill=(["'])(?:black|#000|#000000)\1/gi, 'fill="currentColor"')
+    .replace(/stroke=(["'])(?:black|#000|#000000)\1/gi, 'stroke="currentColor"')
+    .replace('<svg', '<svg aria-hidden="true" focusable="false"');
+}
+
+interface Props {
+  project: Project;
+  /** Running number printed before the name, e.g. "04.1". */
+  number?: string;
+  /** Off when the chapter heading already prints the name; the icon then sits by the kicker. */
+  showName?: boolean;
+  /** Off when the chapter deck already prints the line. */
+  showLine?: boolean;
+}
+const { project: p, number, showName = true, showLine = true } = Astro.props;
+
+const icon = inPublic(p.icon) ? (p.icon.endsWith('.svg') ? { svg: inlineSvg(p.icon) } : { src: p.icon }) : null;
+const shot = p.shot && inPublic(p.shot.src) ? p.shot : null;
+const points = p.points ?? [];
+const links = p.links ?? [];
+const body = p.body ?? null;
+const headingId = `${p.id}-heading`;
+// The demo control appears only once its URL is real and there is a capture to be its poster.
+const demoReady = !!shot && !!p.demo?.src && !isPlaceholder(p.demo.src);
+---
+<section class="project" id={p.id} aria-labelledby={showName ? headingId : undefined} data-reveal>
+  <header class="project__head">
+    {number && <span class="label project__num" aria-hidden="true">{number}</span>}
+    <span class="project__title">
+      {icon && 'svg' in icon && <span class="project__icon" set:html={icon.svg} />}
+      {icon && 'src' in icon && <img class="project__icon" src={icon.src} alt="" width="40" height="40" loading="lazy" decoding="async" />}
+      {showName && <h3 class="project__name" id={headingId}>{p.href ? <a href={p.href} class="draw">{p.name}</a> : p.name}</h3>}
+    </span>
+    {p.kicker && <span class="label project__kicker"><Text text={p.kicker} /></span>}
+    {p.platform && <span class="label project__kicker"><Text text={p.platform} /></span>}
+  </header>
+  {p.reel && <Reel reel={p.reel} />}
+  <div class="project__grid">
+    <div class="project__text">
+      {showLine && p.line && <p class="project__line"><Text text={p.line} /></p>}
+      {body && <div class="project__body"><Paragraphs body={body} /></div>}
+      {points.length > 0 && (
+        <dl class="points">
+          {points.map((pt) => (
+            <div class="points__item">
+              <dt><Text text={pt.title} /></dt>
+              <dd><Text text={pt.text} /></dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      <Stack stack={p.stack} />
+      {links.length > 0 && (
+        <ul class="links">
+          {links.map((l) => <li><a href={l.href}><Text text={l.label} /></a></li>)}
+        </ul>
+      )}
+    </div>
+    {shot && (
+      <figure class="capture" data-demo={demoReady ? p.demo!.src! : undefined} data-demo-title={`${p.name}, live demo`}>
+        <div class="plate__img">
+          <img src={shot.src} alt={shot.alt} width={shot.width} height={shot.height} loading="lazy" decoding="async" />
+          {demoReady && (
+            <div class="plate__controls">
+              <button type="button" class="plate__button" data-demo-open>{p.demo!.open ?? 'Open the live demo'}</button>
+              <button type="button" class="plate__button plate__button--close" data-demo-close>{p.demo!.close ?? 'Close the demo'}</button>
+            </div>
+          )}
+        </div>
+        {demoReady && p.demo!.note && <figcaption class="capture__note"><Text text={p.demo!.note} /></figcaption>}
+      </figure>
+    )}
+  </div>
+</section>

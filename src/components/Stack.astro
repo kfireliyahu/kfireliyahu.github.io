@@ -1,0 +1,15 @@
+---
+/** What a project is built with: a small label, then the names in a row. Prints nothing when empty. */
+import { ui } from '../data/copy';
+
+interface Props {
+  stack?: string[] | null;
+}
+const stack = Astro.props.stack ?? [];
+---
+{stack.length > 0 && (
+  <p class="stack">
+    <span class="label">{ui.builtWith}</span>
+    <span class="stack__items">{stack.map((s) => <><span>{s}</span>{" "}</>)}</span>
+  </p>
+)}

@@ -1,0 +1,97 @@
+---
+/**
+ * Emerald's idea in one picture that moves: a claim checked in front of the reader. A receipt and
+ * the card statement it was paid on; the matching figures light, wires draw down from them into a
+ * claim that they agree, and the claim fails, off by 12.00. Then the receipt's prices stay open:
+ * change one and its total, and the claim, answer at once (scripts/claim.ts).
+ *
+ * Without script, or under prefers-reduced-motion, it prints its finished state. Words and figures
+ * are emerald.claim in copy.ts.
+ */
+import Text from './Text.astro';
+import { emerald } from '../data/copy';
+
+interface Props {
+  /** One line under the plate, after the hint, e.g. that the walkthrough is coming. */
+  note?: string | null;
+}
+const { note = null } = Astro.props;
+const c = emerald.claim;
+const sum = c.receipt.items.reduce((n, i) => n + Number(i.amount), 0).toFixed(2);
+const charge = c.statement.rows[c.statement.match].amount;
+// The finished state, printed as is for a reader without script; claim.ts takes over from here.
+const holds = Math.round(Number(sum) * 100) === Math.round(Number(charge) * 100);
+const diff = Math.abs(Number(sum) - Number(charge)).toFixed(2);
+const message = holds ? c.holds : c.failed.replace('{total}', sum).replace('{charge}', charge).replace('{diff}', diff);
+const verdict = holds ? 'holds' : 'failed';
+---
+<figure class="claim" data-claim data-step="3" data-reveal>
+  <div class="claim__stage">
+    <p class="claim__question"><Text text={c.question} /></p>
+    <button type="button" class="claim__toggle" data-claim-toggle aria-pressed="false" data-pause={c.pause} data-play={c.play}>{c.pause}</button>
+
+    <div class="claim__docs">
+      <section class="claim__doc" aria-label={c.receipt.label}>
+        <p class="label">{c.receipt.label}</p>
+        <p class="claim__shop">{c.receipt.shop}</p>
+        <p class="claim__date">{c.receipt.date}</p>
+        <ul class="claim__items">
+          {c.receipt.items.map((item, i) => (
+            <li>
+              <label for={`claim-item-${i}`}>{item.name}</label>
+              <input id={`claim-item-${i}`} class="claim__input" type="text" inputmode="decimal" value={item.amount} data-default={item.amount} data-item autocomplete="off" spellcheck="false" readonly />
+            </li>
+          ))}
+        </ul>
+        <p class="claim__total claim__mark" data-mark="left">
+          <span>{c.receipt.total}</span><output data-total>{sum}</output>
+        </p>
+      </section>
+
+      <section class="claim__doc" aria-label={c.statement.label}>
+        <p class="label">{c.statement.label}</p>
+        <ul class="claim__rows">
+          {c.statement.rows.map((row, i) => (
+            <li class:list={[{ 'claim__mark': i === c.statement.match }]} data-mark={i === c.statement.match ? 'right' : undefined}>
+              <span class="claim__row-date">{row.date}</span>
+              <span class="claim__row-name">{row.merchant}</span>
+              <span class="claim__row-amount">{row.amount}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+
+    <div class="claim__check" data-verdict={verdict}>
+      <!-- Drawn down from each document into the claim, over the gap between them. -->
+      <span class="claim__wire claim__wire--left" aria-hidden="true"></span>
+      <span class="claim__wire claim__wire--right" aria-hidden="true"></span>
+      <p class="claim__head">
+        <span class="claim__dot" aria-hidden="true"></span>
+        <code>{c.name}</code>
+        <span class="claim__badge" data-badge
+          data-checking={c.states.checking} data-holds={c.states.holds} data-failed={c.states.failed}>{c.states[verdict]}</span>
+      </p>
+      <div class="claim__terms">
+        <div class="claim__term">
+          <code>{c.left}</code>
+          <b data-left>{sum}</b>
+        </div>
+        <div class="claim__op" aria-hidden="true">
+          <span class="claim__eq" data-eq>{holds ? '=' : '≠'}</span>
+          <small>{c.exactly}</small>
+        </div>
+        <div class="claim__term">
+          <code>{c.right}</code>
+          <b data-right>{charge}</b>
+        </div>
+      </div>
+      <p class="claim__msg" data-msg aria-live="off"
+        data-failed={c.failed} data-holds={c.holds} data-waiting={c.waiting}>{message}</p>
+    </div>
+  </div>
+  <figcaption>
+    <span class="claim__hint"><Text text={c.hint} /></span>
+    {note && <> <Text text={note} /></>}
+  </figcaption>
+</figure>
