@@ -235,6 +235,97 @@ ol {
   background-size: 100% 1px;
 }
 
+/* A line icon (components/Icon.astro), the size of the text it sits in. */
+.icon {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+/* A button for what to do next (components/Actions.astro, and the way back on a page beyond the
+   front page). Outlined; the primary one is filled. One not live yet is dashed and goes nowhere. */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  min-height: 2.75rem;
+  padding: 0.55em 1.1em;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: var(--step--1);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--heading);
+  background: transparent;
+  text-decoration: none;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+.button .icon {
+  width: 1.1em;
+  height: 1.1em;
+  transition: transform 300ms var(--ease-out);
+}
+
+a.button:hover {
+  background: var(--heading);
+  color: var(--bg);
+}
+
+.button--primary {
+  background: var(--heading);
+  border-color: var(--heading);
+  color: var(--bg);
+}
+
+a.button--primary:hover {
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+  color: var(--bg);
+}
+
+a.button:hover .icon {
+  transform: translateX(2px);
+}
+
+.button--soon {
+  border-style: dashed;
+  border-color: var(--rule-strong);
+  color: var(--fg-muted);
+  cursor: default;
+}
+
+.button__soon {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2em 0.6em;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  color: var(--fg-muted);
+}
+
+.actions + .links {
+  margin-top: var(--space-3);
+}
+
+/* The way back, on a page beyond the front page: first thing in the text column. */
+.back {
+  margin-top: var(--space-3);
+}
+
+a.back:hover .icon {
+  transform: translateX(-3px);
+}
+
 /* Page grid */
 .page {
   width: min(100% - 2 * var(--gutter), var(--page-max));
@@ -305,17 +396,12 @@ ol {
   border-radius: 2px;
 }
 
-/* A small disc, half filled: the one glyph that reads as "scheme" without an icon set. */
-.theme::before {
-  content: '';
-  width: 0.8em;
-  height: 0.8em;
-  border-radius: 50%;
-  border: 1.5px solid currentColor;
-  background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+/* The two labels, each with its moon or sun: only the one for the scheme we would switch to is shown. */
+.theme .icon {
+  width: 1.15em;
+  height: 1.15em;
 }
 
-/* The two labels: only the one for the scheme we would switch to is shown. */
 .theme__to-dark,
 .theme__to-light {
   display: none;
@@ -323,7 +409,9 @@ ol {
 
 .theme[data-current='light'] .theme__to-dark,
 .theme[data-current='dark'] .theme__to-light {
-  display: inline;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
 }
 
 /* On small screens the home page already opens with the name, so the rail shows only the toggle. */
@@ -545,6 +633,24 @@ ol {
   color: var(--accent-ink);
 }
 
+/* Emerald's own gem before its name. */
+.open__now-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  align-self: center;
+  text-decoration: none;
+}
+
+.open__now-link:hover .draw {
+  background-size: 100% 1px;
+}
+
+.open__now-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
 @media (max-width: 40rem) {
   .open__now {
     display: none;
@@ -609,6 +715,11 @@ ol {
   text-decoration: none;
   font-size: var(--step-0);
   transition: background-color 200ms ease, color 200ms ease;
+}
+
+.open__down .icon {
+  width: 1.1em;
+  height: 1.1em;
 }
 
 .open__down:hover {
@@ -824,6 +935,15 @@ ol {
 
 .chapter__title h2 {
   font-size: 1em;
+}
+
+/* The subject's own icon before the heading (Emerald's gem), sitting on the baseline like a capital. */
+.chapter__icon {
+  display: inline-block;
+  width: 0.82em;
+  height: 0.82em;
+  margin-right: 0.22em;
+  vertical-align: -0.06em;
 }
 
 .chapter__num {
@@ -1826,6 +1946,11 @@ ol {
   display: inline-flex;
   align-items: center;
   gap: 0.4em;
+}
+
+.links a .icon {
+  width: 1.05em;
+  height: 1.05em;
 }
 
 .links a::after {

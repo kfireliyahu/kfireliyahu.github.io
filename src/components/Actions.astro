@@ -1,0 +1,38 @@
+---
+/**
+ * A row of buttons for what a reader can do next: get an app, visit a site, read more. An action
+ * whose address is not live yet (href null) prints as a quiet, unclickable button with its `soon`
+ * note, so the place it will go is already visible; without a `soon` note it prints nothing.
+ */
+import Icon from './Icon.astro';
+import Text from './Text.astro';
+import type { Action } from '../data/copy';
+
+interface Props {
+  actions?: Action[] | null;
+}
+const actions = (Astro.props.actions ?? []).filter((a) => a.href || a.soon);
+// An arrow onward points the way after its words; every other icon names the action before them.
+const trailing = (a: Action) => a.icon === 'arrow-right';
+---
+{actions.length > 0 && (
+  <ul class="actions">
+    {actions.map((a) => (
+      <li>
+        {a.href ? (
+          <a href={a.href} class:list={['button', { 'button--primary': a.primary }]}>
+            {!trailing(a) && <Icon name={a.icon} />}
+            <span><Text text={a.label} /></span>
+            {trailing(a) && <Icon name={a.icon} />}
+          </a>
+        ) : (
+          <span class="button button--soon" aria-disabled="true">
+            <Icon name={a.icon} />
+            <span><Text text={a.label} /></span>
+            <span class="button__soon"><Text text={a.soon!} /></span>
+          </span>
+        )}
+      </li>
+    ))}
+  </ul>
+)}

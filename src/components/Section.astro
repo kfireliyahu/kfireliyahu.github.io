@@ -15,8 +15,10 @@ interface Props {
   deck?: string | null;
   /** The lead chapter opens taller, with a larger deck. One per page. */
   lead?: boolean;
+  /** Public path of the subject's own icon, printed before the heading. */
+  icon?: string | null;
 }
-const { id, number, heading, deck = null, lead = false } = Astro.props;
+const { id, number, heading, deck = null, lead = false, icon = null } = Astro.props;
 const num = String(number).padStart(2, '0');
 ---
 <section id={id} class:list={['chapter', { 'chapter--lead': lead }]} aria-labelledby={`${id}-heading`}>
@@ -24,7 +26,7 @@ const num = String(number).padStart(2, '0');
     <div class="rule"></div>
     <div class="chapter__title">
       <span class="chapter__num" aria-hidden="true">{num}</span>
-      <h2 id={`${id}-heading`}><Text text={heading} /></h2>
+      <h2 id={`${id}-heading`}>{icon && <img class="chapter__icon" src={icon} alt="" width="64" height="64" />}<Text text={heading} /></h2>
     </div>
     {deck && <p class="chapter__deck"><Text text={deck} /></p>}
   </header>

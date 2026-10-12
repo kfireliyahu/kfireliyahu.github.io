@@ -5,7 +5,7 @@
  * 04.1 and 04.2 under Earlier work.
  *
  * Header: running number (when given), icon, name, kicker. Then the text on
- * the left (line, paragraphs, points, links) and the capture on the right at
+ * the left (line, paragraphs, points, buttons, links) and the capture on the right at
  * its natural width. The capture is printed as it is; the old-site captures
  * already carry their own device frame. Images render only if the file
  * exists in public/, so a missing one leaves no hole.
@@ -14,6 +14,7 @@ import Text from './Text.astro';
 import Paragraphs from './Paragraphs.astro';
 import Stack from './Stack.astro';
 import Reel from './Reel.astro';
+import Actions from './Actions.astro';
 import { isPlaceholder, type Project } from '../data/copy';
 import { inPublic, readPublic } from '../lib/public';
 
@@ -78,6 +79,7 @@ const demoReady = !!shot && !!p.demo?.src && !isPlaceholder(p.demo.src);
         </dl>
       )}
       <Stack stack={p.stack} />
+      <Actions actions={p.actions} />
       {links.length > 0 && (
         <ul class="links">
           {links.map((l) => <li><a href={l.href}><Text text={l.label} /></a></li>)}

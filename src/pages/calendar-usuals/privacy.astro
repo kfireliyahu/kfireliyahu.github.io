@@ -11,7 +11,7 @@ import { Content, frontmatter } from '../../content/calendar-usuals-privacy.md';
 
 const page = pages.usualsPrivacy;
 ---
-<Base title={frontmatter?.title ?? page.title} description={page.description} siteName={pages.usuals.name}>
+<Base title={frontmatter?.title ?? page.title} description={page.description} siteName={pages.usuals.name} back={page.back}>
   <article class="chapter prose" data-reveal>
     <header class="chapter__head">
       <div class="rule"></div>

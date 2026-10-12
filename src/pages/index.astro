@@ -6,6 +6,8 @@ import Paragraphs from '../components/Paragraphs.astro';
 import Project from '../components/Project.astro';
 import Stack from '../components/Stack.astro';
 import ClaimCheck from '../components/ClaimCheck.astro';
+import Actions from '../components/Actions.astro';
+import Icon from '../components/Icon.astro';
 import { inPublic } from '../lib/public';
 import { site, ui, intro, emerald, usuals, howIWork, earlierWork, contact, isPlaceholder } from '../data/copy';
 
@@ -45,13 +47,13 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <div class="open__bar-end">
         {intro.now && (
           <p class="open__now label">
-            <span>{intro.now.label}</span> <a href={intro.now.href} class="draw">{intro.now.text}</a>
+            <span>{intro.now.label}</span> <a href={intro.now.href} class="open__now-link"><img class="open__now-icon" src={emerald.icon} alt="" width="16" height="16" /><span class="draw">{intro.now.text}</span></a>
           </p>
         )}
         <button type="button" class="theme" data-theme-toggle>
           <span class="visually-hidden">{ui.theme.label}: </span>
-          <span class="theme__to-dark">{ui.theme.toDark}</span>
-          <span class="theme__to-light">{ui.theme.toLight}</span>
+          <span class="theme__to-dark"><Icon name="moon" />{ui.theme.toDark}</span>
+          <span class="theme__to-light"><Icon name="sun" />{ui.theme.toLight}</span>
         </button>
       </div>
     </div>
@@ -80,7 +82,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
           <li><a href={`#${c.id}`} data-morph={c.id}><span class="open__num">{pad(i + 1)}</span><span class="draw">{c.label}</span></a></li>
         ))}
       </ol>
-      <a href={`#${chapters[0].id}`} class="open__down" aria-label={intro.down}>↓</a>
+      <a href={`#${chapters[0].id}`} class="open__down" aria-label={intro.down}><Icon name="arrow-down" /></a>
     </nav>
   </header>
 
@@ -90,7 +92,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   </Section>
 
   <!-- 02 Emerald, in depth -->
-  <Section id="emerald" number={2} heading={emerald.name} deck={emerald.tagline} lead>
+  <Section id="emerald" number={2} heading={emerald.name} deck={emerald.tagline} icon={emerald.icon} lead>
     {showClaim && <ClaimCheck note={demo.pending} />}
     {!showClaim && showPlate && shot && (
       <figure class="plate" data-reveal data-demo={demoReady ? demo.src : undefined} data-demo-title={`${emerald.name}, live demo`}>
@@ -142,9 +144,9 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
     <Stack stack={emerald.stack} />
 
+    <Actions actions={emerald.actions} />
+
     <ul class="links">
-      {emerald.links.site && <li><a href={emerald.links.site.href}><Text text={emerald.links.site.label} /></a></li>}
-      {emerald.links.repo && <li><a href={emerald.links.repo.href}><Text text={emerald.links.repo.label} /></a></li>}
       {emerald.links.demo && <li><a href={emerald.links.demo.href}><Text text={emerald.links.demo.label} /></a></li>}
       {emerald.links.essay && <li><a href={emerald.links.essay.href}><Text text={emerald.links.essay.label} /></a></li>}
       {emerald.licence && <li class="label links__meta"><Text text={emerald.licence} /></li>}
@@ -165,7 +167,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   <Section id="contact" number={5} heading={contact.heading} deck={contact.lead}>
     <a href={`mailto:${contact.email}`} class="contact__email">{contact.email}</a>
     <ul class="links">
-      <li><a href={contact.github.href} rel="me">{contact.github.label}</a></li>
+      <li><a href={contact.github.href} rel="me"><Icon name="github" />{contact.github.label}</a></li>
       {contact.linkedin && <li><a href={contact.linkedin.href} rel="me"><Text text={contact.linkedin.label} /></a></li>}
     </ul>
   </Section>

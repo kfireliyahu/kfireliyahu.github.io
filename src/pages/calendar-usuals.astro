@@ -20,12 +20,11 @@ const page = pages.usuals;
 const privacyLive = Object.keys(import.meta.glob('./calendar-usuals/privacy.astro')).length > 0;
 
 const links: Link[] = [
-  ...(page.store ? [page.store] : []),
   ...(privacyLive ? [{ label: page.privacy, href: pages.usualsPrivacy.path }] : []),
   { label: `${page.support}: ${contact.email}`, href: `mailto:${contact.email}` },
 ];
 ---
-<Base title={page.name} description={page.description} siteName={page.name}>
+<Base title={page.name} description={page.description} siteName={page.name} back={page.back}>
   <article class="chapter product" aria-labelledby="product-heading">
     <header class="chapter__head" data-reveal>
       <div class="rule"></div>
@@ -34,7 +33,7 @@ const links: Link[] = [
       {usuals.line && <p class="chapter__deck"><Text text={usuals.line} /></p>}
     </header>
 
-    <Project project={{ ...usuals, id: 'about', links }} showName={false} showLine={false} />
+    <Project project={{ ...usuals, id: 'about', actions: [page.store], links }} showName={false} showLine={false} />
 
     <p class="label product__legal">{page.trademark}</p>
   </article>

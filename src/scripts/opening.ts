@@ -12,9 +12,11 @@
  *    rail is hidden (`.index-row` on <html>). Once the row's top passes the top
  *    of the viewport, each rail link flies in from where its twin sits in the
  *    row, one after another, and the rest of the rail fades in; scrolling back
- *    sends them back. The flight is a timed animation, not tied to the scroll,
- *    so it always finishes and the scroll stays the reader's. Under
- *    prefers-reduced-motion the rail just appears.
+ *    sends them back. The flight is timed, not tied to the scroll, so it always
+ *    finishes and the scroll stays the reader's. The drum draws it (`flights`),
+ *    blending each frame toward the pose the drum has for the row right then,
+ *    so a row lands where the drum is, even while the drum is still turning.
+ *    Under prefers-reduced-motion the rail just appears.
  *
  * 3. Wheel. On desktop the rail is a drum, like an iOS picker (`.drum` on
  *    <html>): rows shrink back and fade with their distance from the middle
@@ -44,6 +46,17 @@ const RADIUS = 150;
 const SPRING = 0.14;
 const DAMPING = 0.72;
 
+/**
+ * Rows in flight between the opening's row and the drum, drawn by the drum (see morph). `from` is the
+ * twin in the opening, measured every frame since the page may scroll mid-flight; `start` is when the
+ * row leaves, in performance.now() time.
+ */
+type Flight = { from: HTMLElement; start: number; toColumn: boolean };
+const flights = new Map<HTMLElement, Flight>();
+/** Starts the drum's frame loop so a flight gets drawn; set while the drum is on. */
+let wake = () => {};
+/** The flight's easing: the page's --ease-out, an ease-out quint. */
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 5);
 
 const desktop = window.matchMedia('(min-width: 64rem)');
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -72,7 +85,6 @@ function fit(open: HTMLElement): () => void {
 function morph(open: HTMLElement): () => void {
   const root = document.documentElement;
   const list = open.querySelector<HTMLElement>('.open__index ol');
-  const rail = document.querySelector<HTMLElement>('.rail__list');
   // While the opening's row shows, the rail is hidden; inert keeps keyboard and screen readers out of it too.
   const aside = document.querySelector<HTMLElement>('aside.rail');
   const hide = (yes: boolean) => {
@@ -87,28 +99,20 @@ function morph(open: HTMLElement): () => void {
   let state: 'row' | 'column' | null = null;
   let frame = 0;
 
-  // Each rail row flies between its twin in the opening's row and its place on the drum. The row
-  // (the <li>) is what moves, from flat at the twin's place to the pose the drum gives it (its
-  // transform and opacity as drawn), so the flight ends exactly where the drum has it. The link inside
-  // is held visible meanwhile, over the CSS that hides it while the opening's row shows.
+  // Each rail row flies between its twin in the opening's row and its place on the drum. The drum
+  // draws the flight (flights), from flat at the twin's place to the pose it has for the row on that
+  // frame, so the row lands exactly where the drum is, even while the drum is still turning to the
+  // first chapter. The link inside is held visible meanwhile, over the CSS that hides it while the
+  // opening's row shows.
   const fly = (toColumn: boolean) => {
-    const box = rail?.getBoundingClientRect();
-    if (!box) return;
+    const now = performance.now();
     pairs.forEach(({ from, to }, i) => {
-      const li = to.parentElement!;
-      for (const a of [...li.getAnimations(), ...to.getAnimations()]) if (!('transitionProperty' in a)) a.cancel();
-      const f = from.getBoundingClientRect();
-      const flat = { transform: `translate3d(${f.left - box.left}px, ${f.top - box.top}px, 0)`, opacity: 1 };
-      const posed = { transform: li.style.transform || 'none', opacity: Number(li.style.opacity || 1) };
-      const timing = {
-        duration: FLY_MS,
-        delay: (toColumn ? i : pairs.length - 1 - i) * STAGGER_MS,
-        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-        fill: 'backwards' as const,
-      };
-      li.animate(toColumn ? [flat, posed] : [posed, { ...flat, opacity: 0 }], timing);
-      to.animate([{ opacity: 1 }, { opacity: 1 }], timing);
+      for (const a of to.getAnimations()) if (!('transitionProperty' in a)) a.cancel();
+      const delay = (toColumn ? i : pairs.length - 1 - i) * STAGGER_MS;
+      flights.set(to.parentElement!, { from, start: now + delay, toColumn });
+      to.animate([{ opacity: 1 }, { opacity: 1 }], { duration: FLY_MS, delay, fill: 'backwards' });
     });
+    wake();
   };
 
   const update = () => {
@@ -221,19 +225,37 @@ function drum(): () => void {
     return i;
   };
 
-  // The drum: rows shrink back and fade with distance from the middle.
+  // The drum: rows shrink back and fade with distance from the middle. A row in flight is drawn
+  // part way between flat at its twin's place and that pose.
   const draw = () => {
     const box = list.getBoundingClientRect();
     const band = window.innerHeight * LINE - box.top;
+    const now = performance.now();
     list.style.setProperty('--band', `${band}px`);
     rows.forEach((r, k) => {
       const d = k - pos;
-      const angle = clamp(d * STEP, -90, 90);
+      let angle = clamp(d * STEP, -90, 90);
       const rad = (angle * Math.PI) / 180;
-      const y = band + RADIUS * Math.sin(rad) - rowHeight / 2;
-      const z = RADIUS * (Math.cos(rad) - 1);
-      r.li.style.transform = `translate3d(0, ${y.toFixed(2)}px, ${z.toFixed(2)}px) rotateX(${(-angle).toFixed(2)}deg)`;
-      r.li.style.opacity = String(clamp(1 - Math.abs(d) * 0.26, 0, 1));
+      let x = 0;
+      let y = band + RADIUS * Math.sin(rad) - rowHeight / 2;
+      let z = RADIUS * (Math.cos(rad) - 1);
+      let opacity = clamp(1 - Math.abs(d) * 0.26, 0, 1);
+      const flight = flights.get(r.li);
+      if (flight) {
+        const t = clamp((now - flight.start) / FLY_MS, 0, 1);
+        if (t >= 1) flights.delete(r.li);
+        // How far the row is toward the drum: 0 is flat at its twin, 1 is the drum's pose.
+        const e = flight.toColumn ? easeOut(t) : 1 - easeOut(t);
+        const f = flight.from.getBoundingClientRect();
+        x = (f.left - box.left) * (1 - e);
+        y = (f.top - box.top) * (1 - e) + y * e;
+        z *= e;
+        angle *= e;
+        // Flying in it starts fully shown; flying back it fades out on the way.
+        opacity = flight.toColumn ? 1 - (1 - opacity) * e : opacity * e;
+      }
+      r.li.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, ${z.toFixed(2)}px) rotateX(${(-angle).toFixed(2)}deg)`;
+      r.li.style.opacity = String(opacity);
       // Past the drum's edge a row is out of sight and out of the pointer's way, but not out of the
       // keyboard's: focus on it turns the drum to it.
       r.li.style.pointerEvents = Math.abs(d) > 3.6 ? 'none' : '';
@@ -268,7 +290,7 @@ function drum(): () => void {
       pos += vel;
     }
     draw();
-    if (Math.abs(goal() - pos) < 0.0005 && Math.abs(vel) < 0.0005) {
+    if (Math.abs(goal() - pos) < 0.0005 && Math.abs(vel) < 0.0005 && flights.size === 0) {
       pos = goal();
       draw();
       frame = 0;
@@ -307,6 +329,8 @@ function drum(): () => void {
   const clear = () => {
     cancelAnimationFrame(frame);
     frame = 0;
+    wake = () => {};
+    flights.clear();
     root.classList.remove('drum');
     ro.disconnect();
     for (const t of timers.splice(0)) clearTimeout(t);
@@ -323,6 +347,7 @@ function drum(): () => void {
     on = desktop.matches;
     if (!on) return clear();
     root.classList.add('drum');
+    wake = run;
     if (!spacer.isConnected) placeSpacer();
     rowHeight = rows[0].li.offsetHeight;
     fitScreens();

@@ -9,7 +9,16 @@
  * site points at something that does not exist yet.
  */
 
+import type { IconName } from '../lib/icons';
+
 export type Link = { label: string; href: string };
+
+/**
+ * A button for what the reader can do next (components/Actions.astro). While `href` is null the
+ * address is not live yet: the button prints quiet and unclickable with its `soon` note, or not at
+ * all without one. `primary` fills the button; one per row at most.
+ */
+export type Action = { label: string; href: string | null; icon: IconName; soon?: string | null; primary?: boolean };
 
 export const site = {
   name: 'Kfir Raphael Eliyahu',
@@ -27,6 +36,8 @@ export const ui = {
   theme: { toDark: 'Dark', toLight: 'Light', label: 'Colour scheme' },
   /** The first link on every page, shown only when focused: straight past the opening and the index. */
   skip: 'Skip to content',
+  /** Printed on a button whose address is not live yet. */
+  soon: 'Coming soon',
   /** Printed before a project's stack. */
   builtWith: 'Built with',
 };
@@ -45,8 +56,9 @@ export const intro = {
  * Emerald's addresses (identity plan Q-11 and D-23, Emerald D-430). The site
  * goes live before these answer (identity plan D-25: site first, quietly), so
  * each has a switch below. While a switch is off the page prints nothing for
- * it: no link, no control, no iframe. Flip it when the address answers;
- * nothing else on the page changes.
+ * it: no link, no control, no iframe; only Emerald's own site shows, as a
+ * "Coming soon" button that goes nowhere (Kfir, 2026-10-12). Flip it when the
+ * address answers; nothing else on the page changes.
  */
 const emeraldRepo = 'emerald-emd';
 const emeraldRepoUrl = `https://github.com/kfireliyahu/${emeraldRepo}`;
@@ -73,6 +85,8 @@ const when = <T>(on: boolean, value: T): T | null => (on ? value : null);
 /** 2. Emerald, in depth. */
 export const emerald = {
   name: 'Emerald',
+  /** Emerald's own icon, copied from its src/ui/emerald.svg. Beside the chapter heading and the "Now building" link. */
+  icon: '/images/emerald-icon.svg',
   /**
    * The deck line under the chapter heading. Emerald's own sentence, the first
    * line of its README, as the Emerald session asked (its D-413): never "a
@@ -235,10 +249,13 @@ export const emerald = {
   licence: 'AGPL-3.0' as string | null,
   /** What it is built with, printed above the links. Read off its package.json. Set to null to omit. */
   stack: ['TypeScript', 'React', 'SQLite', 'Electron', 'MCP'] as string[] | null,
+  /** The buttons under the text. Emerald's own site first, shown as coming soon until it answers. */
+  actions: [
+    { label: 'getemerald.dev', href: when(live.emeraldSite, emeraldSiteUrl), icon: 'external', soon: ui.soon, primary: true },
+    { label: 'Source on GitHub', href: when(live.emeraldRepo, emeraldRepoUrl), icon: 'github' },
+  ] satisfies Action[] as Action[],
+  /** Smaller links after the buttons. */
   links: {
-    /** Emerald's own site. First in the row. */
-    site: when(live.emeraldSite, { label: 'getemerald.dev', href: emeraldSiteUrl }),
-    repo: when(live.emeraldRepo, { label: 'Source on GitHub', href: emeraldRepoUrl }),
     demo: null as Link | null,
     /** Room for the essay later. Leave null until /essays ships. */
     essay: null as Link | null,
@@ -282,6 +299,8 @@ export type Project = {
   shot?: { src: string; alt: string; width: number; height: number } | null;
   /** Clips that show it working, printed wide under the header, above the text. */
   reel?: Reel | null;
+  /** Buttons for what to do next (get it, read more), printed above the links. */
+  actions?: Action[] | null;
   links?: Link[] | null;
   /** What it is built with, a few names, printed above the links. */
   stack?: string[] | null;
@@ -292,6 +311,12 @@ export type Project = {
    */
   demo?: { src: string | null; open?: string; close?: string; note?: string | null } | null;
 };
+
+/**
+ * Usuals in the Chrome Web Store: the first button on the front page and on its own page. Set
+ * `href` to the listing once it is published; until then the button says it is coming.
+ */
+const usualsStore: Action = { label: 'Chrome Web Store', href: null, icon: 'extension', soon: ui.soon, primary: true };
 
 /**
  * 3. Usuals, shorter. Printed with the Project component, full variant.
@@ -343,7 +368,7 @@ export const usuals: Project = {
     pause: 'Pause',
     play: 'Play',
   },
-  links: [{ label: 'About Usuals', href: '/calendar-usuals' }],
+  actions: [usualsStore, { label: 'About Usuals', href: '/calendar-usuals', icon: 'arrow-right' }],
   /** A live demo, if one is ever made. Its control shows only beside a `shot`, its poster; the reel above has none. */
   demo: { src: null, open: 'Open the live demo', close: 'Close the demo', note: null },
 };
@@ -370,8 +395,10 @@ export const pages = {
     /** Google's own permitted phrasing. Never "Usuals for Google Calendar", never a Google logo. */
     worksWith: 'Works with Google Calendar',
     description: 'Usuals keeps the things you usually do in a sidebar beside Google Calendar’s week and day views; drag one onto a time and it becomes an event.',
-    /** The Chrome Web Store listing. Leave null until it is published. */
-    store: null as Link | null,
+    /** The Chrome Web Store button; its address is set on usualsStore above. */
+    store: usualsStore,
+    /** The button back to the front page, at the top of the page. */
+    back: { label: 'Back to kfireliyahu.com', href: '/#usuals' } as Link,
     /** The privacy link prints once the privacy page is built (see usualsPrivacy). */
     privacy: 'Privacy policy',
     support: 'Support',
@@ -387,6 +414,8 @@ export const pages = {
   usualsPrivacy: {
     path: '/calendar-usuals/privacy',
     title: 'Usuals Privacy Policy',
+    /** The button back to the Usuals page, at the top of the page. */
+    back: { label: 'Back to Usuals', href: '/calendar-usuals' } as Link,
     description: 'How Usuals handles your data: it has no server, and sends nothing anywhere except Google’s Calendar API.',
   },
 };
@@ -425,6 +454,8 @@ export const earlierWork = {
       shot: { src: '/images/tetra-shot.png', alt: 'Tetra: a month calendar on a phone, with the day planner below it.', width: 379, height: 758 },
       /** Its code is not on this machine; fill in from memory, or leave null to print nothing. */
       stack: null,
+      /** Its Google Play listing, found under Mooncrest's other apps on 24 Hours' page, 2026-10-12. */
+      actions: [{ label: 'Get it on Google Play', href: 'https://play.google.com/store/apps/details?id=com.mooncrest.tetra', icon: 'download', primary: true }],
       links: [],
     },
     // Facts read off the app's code (TwentyFourHours, version 2.7.11) on 2026-10-11; the
@@ -448,6 +479,8 @@ export const earlierWork = {
       shot: { src: '/images/24-hours-shot.png', alt: '24 Hours: the 24-hour watch face on a phone, with habits placed around the dial.', width: 380, height: 759 },
       /** Read off app/build.gradle. */
       stack: ['Kotlin', 'Jetpack Compose', 'Room', 'Hilt', 'Firebase'],
+      /** Its Google Play listing; the id is the applicationId in app/build.gradle. Checked live 2026-10-12. */
+      actions: [{ label: 'Get it on Google Play', href: 'https://play.google.com/store/apps/details?id=com.mooncrest.twentyfourhours', icon: 'download', primary: true }],
       links: [],
     },
   ] satisfies Project[],

@@ -5,7 +5,8 @@
  * script, and the footer.
  */
 import { ClientRouter } from 'astro:transitions';
-import { site, ui, intro } from '../data/copy';
+import Icon from '../components/Icon.astro';
+import { site, ui, intro, type Link } from '../data/copy';
 import '../styles/global.css';
 
 interface Props {
@@ -15,8 +16,10 @@ interface Props {
   siteName?: string;
   /** Chapters listed in the rail, in order, with any sub-chapters. Empty on pages that have none. */
   chapters?: { id: string; label: string; children?: { id: string; label: string }[] }[];
+  /** A button back to the page this one hangs off, at the top of the text column. */
+  back?: Link | null;
 }
-const { title = site.title, description = site.description, siteName = site.domain, chapters = [] } = Astro.props;
+const { title = site.title, description = site.description, siteName = site.domain, chapters = [], back = null } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL('/og.png', Astro.site);
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -82,11 +85,12 @@ const isHome = Astro.url.pathname === '/';
         )}
         <button type="button" class="theme" data-theme-toggle>
           <span class="visually-hidden">{ui.theme.label}: </span>
-          <span class="theme__to-dark">{ui.theme.toDark}</span>
-          <span class="theme__to-light">{ui.theme.toLight}</span>
+          <span class="theme__to-dark"><Icon name="moon" />{ui.theme.toDark}</span>
+          <span class="theme__to-light"><Icon name="sun" />{ui.theme.toLight}</span>
         </button>
       </aside>
       <main class="main" id="main" tabindex="-1">
+        {back && <a href={back.href} class="button back"><Icon name="arrow-left" /><span>{back.label}</span></a>}
         <slot />
         <footer class="footer">
           <span>{site.copyright}</span>
