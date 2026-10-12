@@ -28,12 +28,13 @@ const links: Link[] = [
   <article class="chapter product" aria-labelledby="product-heading">
     <header class="chapter__head" data-reveal>
       <div class="rule"></div>
-      <h1 id="product-heading" class="product__name">{page.name}</h1>
+      <!-- The icon has no alt text, so the heading still reads exactly the product name for Google's brand check. -->
+      <h1 id="product-heading" class="product__name">{usuals.icon && <img class="chapter__icon" src={usuals.icon} alt="" width="96" height="96" />}{page.name}</h1>
       <p class="label">{page.worksWith}</p>
       {usuals.line && <p class="chapter__deck"><Text text={usuals.line} /></p>}
     </header>
 
-    <Project project={{ ...usuals, id: 'about', actions: [page.store], links }} showName={false} showLine={false} />
+    <Project project={{ ...usuals, id: 'about', icon: null, actions: [page.store], links }} showName={false} showLine={false} />
 
     <p class="label product__legal">{page.trademark}</p>
   </article>

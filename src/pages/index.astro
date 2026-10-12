@@ -154,8 +154,9 @@ const pad = (n: number) => String(n).padStart(2, '0');
   </Section>
 
   <!-- 03 Usuals -->
-  <Section id="usuals" number={3} heading={usuals.name} deck={usuals.line}>
-    <Project project={usuals} showName={false} showLine={false} />
+  <!-- The icon sits in the heading, as Emerald's does, so the project row under it goes without. -->
+  <Section id="usuals" number={3} heading={usuals.name} deck={usuals.line} icon={usuals.icon}>
+    <Project project={{ ...usuals, icon: null }} showName={false} showLine={false} />
   </Section>
 
   <!-- 04 Earlier work: one sub-chapter per project -->
