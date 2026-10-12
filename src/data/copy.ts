@@ -50,9 +50,13 @@ export const intro = {
  */
 const emeraldRepo = 'emerald-emd';
 const emeraldRepoUrl = `https://github.com/kfireliyahu/${emeraldRepo}`;
-/** Emerald's own domain, bought 2026-10-08. The demo base moves here once Emerald's Pages point at it. */
+/** Emerald's own domain, bought 2026-10-08. The demo base moves here (https://getemerald.dev/tour.html) once Emerald's Pages point at it. */
 const emeraldSiteUrl = 'https://getemerald.dev/';
-const emeraldDemoBase = `https://kfireliyahu.github.io/${emeraldRepo}/`;
+/**
+ * The tour frame itself, not the folder: since Emerald's D-459 the demo build's index.html is
+ * Emerald's own page and the frame is tour.html beside it (site.emd inbox, 2026-10-12).
+ */
+const emeraldDemoBase = `https://kfireliyahu.github.io/${emeraldRepo}/tour.html`;
 
 const live = {
   /** github.com/kfireliyahu/emerald-emd is public. */
@@ -208,10 +212,11 @@ export const emerald = {
    * to its parent; nothing here listens. The app lays out no narrower than
    * about 960px and is a crop below 690px.
    *
-   * The URL is the hosted build plus `?tour=custom&autoplay=1`. Emerald's
-   * repo publishes to GitHub Pages under the same account as this site, so
-   * once the apex is this site's custom domain the demo is served under it
-   * as well: https://kfireliyahu.com/emerald/... (GitHub serves project sites
+   * The URL is the hosted build's tour frame, tour.html, plus
+   * `?tour=custom&autoplay=1`. Emerald's repo publishes to GitHub Pages under
+   * the same account as this site, so until Emerald's own domain points at it,
+   * once the apex is this site's custom domain the demo is also served at
+   * https://kfireliyahu.com/emerald-emd/tour.html (GitHub serves project sites
    * under the user site's custom domain).
    */
   demo: {
