@@ -1,6 +1,6 @@
 ---
 title: Usuals Privacy Policy
-effective: 11 October 2026
+effective: 12 October 2026
 ---
 
 Usuals is a Chrome extension that keeps the things you usually do in a sidebar beside Google Calendar, and turns one into a calendar event when you drag it onto a time. It is made by one person, Kfir Raphael Eliyahu ("I" below).
