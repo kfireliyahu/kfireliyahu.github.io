@@ -328,10 +328,10 @@ export const usuals: Project = {
   icon: '/images/usuals-icon.svg',
   kicker: 'Chrome extension, 2026',
   /** Also the deck on the Usuals page. */
-  line: 'Your usual things, kept beside Google Calendar and one drag away from becoming events.',
+  line: 'Your usual events, kept beside Google Calendar and one drag away from your week.',
   /** Also the body of the Usuals page. */
   body: [
-    'Most weeks are built from the same handful of things: a workout, a call home, deep work, groceries. ' +
+    'Most weeks are built from the same few events: a workout, a call home, deep work, groceries. ' +
       'Usuals keeps them in a sidebar in Google Calendar’s Week and Day views; drag one onto a time slot and it becomes a real event.',
   ],
   /** Optional. Each point is a short title and one sentence. Leave empty for none. */
@@ -359,7 +359,7 @@ export const usuals: Project = {
       height: 800,
     },
     clips: [
-      { src: '/images/usuals/1-add-a-usual.mp4', label: 'Keep the things you usually do beside your week', alt: 'Typing “Workout” into the sidebar under the Health calendar; it appears as a chip.' },
+      { src: '/images/usuals/1-add-a-usual.mp4', label: 'Keep your usual events beside your week', alt: 'Typing “Workout” into the sidebar under the Health calendar; it appears as a chip.' },
       { src: '/images/usuals/2-drag-onto-a-time.mp4', label: 'Drag one onto a time, and it’s a real event', alt: 'Dragging Workout onto Sunday at 1 pm, where it becomes a real event.' },
       { src: '/images/usuals/3-pick-and-click.mp4', label: 'Or pick one and click a time', alt: 'Picking Workout with its calendar button, then clicking Thursday at 1 pm, with no dragging.' },
       { src: '/images/usuals/4-shift-repeats-weekly.mp4', label: 'Hold Shift to make it repeat weekly', alt: 'Shift-dragging House Cleanup onto Friday; in the next week it is there again.' },
@@ -394,7 +394,7 @@ export const pages = {
     name: 'Usuals',
     /** Google's own permitted phrasing. Never "Usuals for Google Calendar", never a Google logo. */
     worksWith: 'Works with Google Calendar',
-    description: 'Usuals keeps the things you usually do in a sidebar beside Google Calendar’s week and day views; drag one onto a time and it becomes an event.',
+    description: 'Usuals keeps your usual events in a sidebar beside Google Calendar’s week and day views; drag one onto a time and it becomes an event.',
     /** The Chrome Web Store button; its address is set on usualsStore above. */
     store: usualsStore,
     /** The button back to the front page, at the top of the page. */
