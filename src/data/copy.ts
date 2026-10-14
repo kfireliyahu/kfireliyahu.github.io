@@ -313,10 +313,15 @@ export type Project = {
 };
 
 /**
- * Usuals in the Chrome Web Store: the first button on the front page and on its own page. Set
- * `href` to the listing once it is published; until then the button says it is coming.
+ * Usuals in the Chrome Web Store: the first button on the front page and on its own page.
+ * Published 2026-10-14 (site.emd inbox); the bare listing address, without the browser's query.
  */
-const usualsStore: Action = { label: 'Chrome Web Store', href: null, icon: 'extension', soon: ui.soon, primary: true };
+const usualsStore: Action = {
+  label: 'Chrome Web Store',
+  href: 'https://chromewebstore.google.com/detail/usuals/hkihoifbohighgoackpcinobeabpjnbp',
+  icon: 'extension',
+  primary: true,
+};
 
 /**
  * 3. Usuals, shorter. Printed with the Project component, full variant.
