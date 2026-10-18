@@ -62,21 +62,22 @@ export const intro = {
  */
 const emeraldRepo = 'emerald-emd';
 const emeraldRepoUrl = `https://github.com/kfireliyahu/${emeraldRepo}`;
-/** Emerald's own domain, bought 2026-10-08. The demo base moves here (https://getemerald.dev/tour.html) once Emerald's Pages point at it. */
+/** Emerald's own domain, bought 2026-10-08, live since Emerald's public release on 2026-10-18 (its D-495). */
 const emeraldSiteUrl = 'https://getemerald.dev/';
 /**
  * The tour frame itself, not the folder: since Emerald's D-459 the demo build's index.html is
- * Emerald's own page and the frame is tour.html beside it (site.emd inbox, 2026-10-12).
+ * Emerald's own page and the frame is tour.html beside it (site.emd inbox, 2026-10-12). Served
+ * from Emerald's own domain since 2026-10-18 (site.emd inbox).
  */
-const emeraldDemoBase = `https://kfireliyahu.github.io/${emeraldRepo}/tour.html`;
+const emeraldDemoBase = `${emeraldSiteUrl}tour.html`;
 
 const live = {
   /** github.com/kfireliyahu/emerald-emd is public. */
-  emeraldRepo: false,
+  emeraldRepo: true,
   /** getemerald.dev answers. */
-  emeraldSite: false,
+  emeraldSite: true,
   /** The tour is deployed at emeraldDemoBase. */
-  emeraldDemo: false,
+  emeraldDemo: true,
 };
 
 /** The value while its switch is on, nothing while it is off. */
@@ -227,11 +228,9 @@ export const emerald = {
    * about 960px and is a crop below 690px.
    *
    * The URL is the hosted build's tour frame, tour.html, plus
-   * `?tour=custom&autoplay=1`. Emerald's repo publishes to GitHub Pages under
-   * the same account as this site, so until Emerald's own domain points at it,
-   * once the apex is this site's custom domain the demo is also served at
-   * https://kfireliyahu.com/emerald-emd/tour.html (GitHub serves project sites
-   * under the user site's custom domain).
+   * `?tour=custom&autoplay=1`, at https://getemerald.dev/tour.html. Since
+   * Emerald's D-496 the frame holds step 1 until it is seen, so autoplay is
+   * safe even if the frame were loaded below the fold.
    */
   demo: {
     src: when(live.emeraldDemo, `${emeraldDemoBase}?tour=custom&autoplay=1`),
